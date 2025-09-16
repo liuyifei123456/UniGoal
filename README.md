@@ -9,6 +9,7 @@
 We propose a <b>unified</b> graph representation for <b>zero-shot</b> goal-oriented navigation. Our method can be directly applied to different kinds of scenes and goals <b>without training</b>.
 
 ## News
+- [2025/08/01]: [GC-VLN](https://bagh2178.github.io/GC-VLN/) is accepted to CoRL 2025! This is a further extension of our scene graph-based navigation series which solves the problem of vision-and-language navigation with graph constraint.
 - [2025/05/13]: Fix bugs on environment installation and inference. Object-goal will be supported in two weeks.
 - [2025/04/06]: Release code. Now instance-image-goal and text-goal are supported.
 - [2025/03/08]: Initial update. We are working for ICCV now. Arxiv and code will be released within two weeks.
