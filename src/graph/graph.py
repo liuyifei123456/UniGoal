@@ -229,7 +229,7 @@ Object pair(s):
         self.prompt_graph_corr_1 = 'What else do you need to know to determine the probability of A and B appearing together? [A:{}], [B:{}]. Please output a short question (output only one sentence with no additional text).'
         self.prompt_graph_corr_2 = 'Here is the objects and relationships near A: [{}] You answer the following question with a short sentence based on this information. Question: {}'
         self.prompt_graph_corr_3 = 'The probability of A and B appearing together is about {}. Based on the dialog: [{}], re-determine the probability of A and B appearing together. A:[{}], B:[{}]. Even if you do not have enough information, you have to answer with a value from 0 to 1 anyway. Answer only the value of probability and do not answer any other text.'
-        self.prompt_image2text = 'Describe the object at the center of the image and indicate the spatial relationship between other objects and it.'
+        self.prompt_image2text = 'Describe the main object in the center of this image, including its color, material, and appearance. Then describe what other objects or furniture are visible around it and their spatial relationships (such as next to, on, under, behind, in front of). Be specific and mention at least 2-3 surrounding objects if visible.'
         self.prompt_create_relation = """
 Given the image, please analyze the spatial relationship between {obj1} and {obj2}.
 If there is a clear spatial relationship, describe it using the following template:
@@ -293,8 +293,15 @@ Please provide the relationship you can determine from the image.
         if isinstance(text_goal, dict) and 'intrinsic_attributes' in text_goal and 'extrinsic_attributes' in text_goal:
             text_goal = text_goal['intrinsic_attributes'] + ' ' + text_goal['extrinsic_attributes']
         self.text_goal = text_goal
+        print(f'\n{"="*60}')
+        print(f'Building Goal Graph from: {text_goal}')
+        print(f'{"="*60}')
         self.goalgraph = self.graphbuilder.build_graph_from_text(text_goal)
+        print(f'\n>>> GOAL GRAPH BUILT <<<')
+        print(f'  Nodes: {len(self.goalgraph["nodes"])} - {[n["id"] for n in self.goalgraph["nodes"]]}')
+        print(f'  Edges: {len(self.goalgraph["edges"])} - {[(e["source"], e["type"], e["target"]) for e in self.goalgraph["edges"]]}')
         self.goalgraph_decomposed = self.goalgraphdecomposer.goal_decomposition(self.goalgraph)
+        print(f'{"="*60}\n')
 
     def set_frontier_map(self, frontier_map):
         self.frontier_map = frontier_map

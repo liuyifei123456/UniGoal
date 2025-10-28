@@ -68,7 +68,7 @@ map_size_cm: 3600
 map_resolution: 5
 
 # LLM and VLM
-llm_model: "llama3.2-vision"
-vlm_model: "llama3.2-vision"
+llm_model: "llama3.2-vision:11b"
+vlm_model: "llama3.2-vision:11b"
 api_key: "ollama"
 base_url: "http://localhost:11434/v1/"

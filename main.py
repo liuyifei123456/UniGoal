@@ -81,6 +81,7 @@ def main():
     graph = Graph(args)
     envs = construct_envs(args)
     agent = UniGoal_Agent(args, envs)
+    agent.set_graph(graph)  # Pass graph to agent for visualization
 
     BEV_map.init_map_and_pose()
     obs, rgbd, infos = agent.reset()

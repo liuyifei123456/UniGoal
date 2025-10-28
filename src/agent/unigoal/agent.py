@@ -79,11 +79,59 @@ class UniGoal_Agent():
         self.pred_box = []
         self.prompt_text2object = '"chair: 0, sofa: 1, plant: 2, bed: 3, toilet: 4, tv_monitor: 5" The above are the labels corresponding to each category. Which object is described in the following text? Only response the number of the label and not include other text.\nText: {text}'
         torch.set_grad_enabled(False)
+        
+        self.graph = None  # Will be set via set_graph()
 
         if args.visualize:
             self.vis_image_background = None
             self.rgb_vis = None
             self.vis_image_list = []
+
+    def set_graph(self, graph):
+        """Set graph object for visualization"""
+        self.graph = graph
+
+    def _draw_goal_graph(self):
+        """Draw goal graph as a simple text representation"""
+        try:
+            goalgraph = self.graph.goalgraph
+            if not goalgraph or len(goalgraph.get('nodes', [])) == 0:
+                return None
+            
+            # Create white canvas
+            canvas = np.ones((215, 215, 3), dtype=np.uint8) * 255
+            
+            # Extract nodes and edges
+            nodes = goalgraph.get('nodes', [])
+            edges = goalgraph.get('edges', [])
+            
+            # Create text representation
+            graph_text = []
+            graph_text.append("Nodes:")
+            for i, node in enumerate(nodes[:5]):  # Max 5 nodes
+                node_id = node.get('id', f'node{i}')
+                graph_text.append(f"  {node_id}")
+            
+            if len(edges) > 0:
+                graph_text.append("")
+                graph_text.append("Edges:")
+                for i, edge in enumerate(edges[:5]):  # Max 5 edges
+                    src = edge.get('source', '?')
+                    tgt = edge.get('target', '?')
+                    rel = edge.get('type', 'related to')
+                    # Shorten long relation names
+                    if len(rel) > 15:
+                        rel = rel[:12] + '...'
+                    graph_text.append(f"  {src}->{tgt}")
+                    graph_text.append(f"    [{rel}]")
+            
+            # Draw text on canvas
+            add_text_list(canvas, graph_text[:14], position=(5, 15), font_scale=0.4, thickness=1)
+            
+            return canvas
+        except Exception as e:
+            print(f"Failed to draw goal graph: {e}")
+            return None
 
     def reset(self):
         args = self.args
@@ -804,6 +852,13 @@ class UniGoal_Agent():
                 text_goal = self.text_goal
             text_goal = line_list(text_goal)[:12]
             add_text_list(vis_image[50:265, 25:240], text_goal)
+        
+        # Draw Goal Graph visualization
+        if self.args.environment == 'habitat' and self.graph is not None and hasattr(self.graph, 'goalgraph'):
+            goal_graph_vis = self._draw_goal_graph()
+            if goal_graph_vis is not None:
+                vis_image[315:530, 25:240] = goal_graph_vis
+        
         vis_image[50:530, 650:1130] = sem_map_vis
         if self.args.environment == 'habitat':
             vis_image[50:530, 265:625] = rgb_visualization
