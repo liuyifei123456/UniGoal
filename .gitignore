@@ -3,8 +3,10 @@
 data
 output
 outputs
+outputs_73
 pretrained_models
 tmp
+download
 third_party/Grounded-Segment-Anything
 **/__pycache__/**
 **/*.pyc
